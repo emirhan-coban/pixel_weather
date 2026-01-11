@@ -1,0 +1,33 @@
+name: pixel_weather
+description: "A new Flutter project."
+publish_to: "none"
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  http:
+  geolocator:
+  geocoding:
+  provider:
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/backgrounds/
+    - assets/fonts/
+
+  fonts:
+    - family: Pixel
+      fonts:
+        - asset: assets/fonts/PressStart2P-Regular.ttf
