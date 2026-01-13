@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:pixel_weather/models/weather_model.dart';
 import 'package:pixel_weather/models/location_model.dart';
 import 'package:pixel_weather/services/weather_background.dart';
+import 'package:pixel_weather/widgets/rain_animation.dart';
+import 'package:pixel_weather/widgets/snow_animation.dart';
 import 'package:pixel_weather/widgets/is_loading.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -12,9 +14,12 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late AnimationController _animationController;
+  late AnimationController _rainController;
+  late AnimationController _snowController;
+  bool _isRainPlaying = false;
+  bool _isSnowPlaying = false;
 
   @override
   void initState() {
@@ -24,6 +29,16 @@ class _HomeScreenState extends State<HomeScreen>
       duration: const Duration(seconds: 1),
       vsync: this,
     )..repeat(reverse: true);
+
+    _rainController = AnimationController(
+      duration: const Duration(milliseconds: 700),
+      vsync: this,
+    );
+
+    _snowController = AnimationController(
+      duration: const Duration(seconds: 30),
+      vsync: this,
+    );
 
     // Build sonrası konumu al (Provider state değişikliğini önlemek için)
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -51,7 +66,31 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void dispose() {
     _animationController.dispose();
+    _rainController.dispose();
+    _snowController.dispose();
     super.dispose();
+  }
+
+  void _syncRainAnimation(bool shouldPlay) {
+    if (shouldPlay && !_isRainPlaying) {
+      _rainController.repeat();
+      _isRainPlaying = true;
+    } else if (!shouldPlay && _isRainPlaying) {
+      _rainController.stop();
+      _rainController.reset();
+      _isRainPlaying = false;
+    }
+  }
+
+  void _syncSnowAnimation(bool shouldPlay) {
+    if (shouldPlay && !_isSnowPlaying) {
+      _snowController.repeat();
+      _isSnowPlaying = true;
+    } else if (!shouldPlay && _isSnowPlaying) {
+      _snowController.stop();
+      _snowController.reset();
+      _isSnowPlaying = false;
+    }
   }
 
   @override
@@ -62,6 +101,15 @@ class _HomeScreenState extends State<HomeScreen>
         String? weatherMain = weatherModel.weatherData?['weather']?[0]?['main'];
         int? sunrise = weatherModel.sunrise;
         int? sunset = weatherModel.sunset;
+        final shouldShowRain = WeatherBackground.shouldShowRainAnimation(
+          weatherMain,
+        );
+        final shouldShowSnow = WeatherBackground.shouldShowSnowAnimation(
+          weatherMain,
+        );
+
+        _syncRainAnimation(shouldShowRain);
+        _syncSnowAnimation(shouldShowSnow);
 
         // Debug: Console'a hava durumunu yazdır
         debugPrint('Weather Data: ${weatherModel.weatherData}');
@@ -78,6 +126,16 @@ class _HomeScreenState extends State<HomeScreen>
                 sunrise,
                 sunset,
               ),
+
+              if (shouldShowRain)
+                Positioned.fill(
+                  child: RainAnimation(animation: _rainController),
+                ),
+
+              if (shouldShowSnow)
+                Positioned.fill(
+                  child: SnowAnimation(animation: _snowController),
+                ),
 
               // Yükleniyor ve Hata Overlay en önde
               LoadingOverlay(

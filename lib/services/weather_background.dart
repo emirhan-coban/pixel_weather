@@ -1,6 +1,25 @@
 import 'package:flutter/material.dart';
 
 class WeatherBackground {
+  static const Set<String> _rainyKeywords = {
+    'rain',
+    'rainy',
+    'drizzle',
+    'thunderstorm',
+  };
+
+  static bool shouldShowRainAnimation(String? weatherMain) {
+    if (weatherMain == null) return false;
+    return _rainyKeywords.contains(weatherMain.toLowerCase());
+  }
+
+  static const Set<String> _snowKeywords = {'snow', 'snowy'};
+
+  static bool shouldShowSnowAnimation(String? weatherMain) {
+    if (weatherMain == null) return false;
+    return _snowKeywords.contains(weatherMain.toLowerCase());
+  }
+
   // Sunrise/Sunset'e göre gece saati mi kontrol et
   static bool isNightTimeBasedOnLocation(int? sunrise, int? sunset) {
     if (sunrise == null || sunset == null) {
