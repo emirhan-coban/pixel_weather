@@ -89,7 +89,11 @@ class WeatherBackground {
 
     return Container(
       decoration: BoxDecoration(
-        image: DecorationImage(image: AssetImage(imagePath), fit: BoxFit.cover),
+        image: DecorationImage(
+          image: AssetImage(imagePath),
+          fit: BoxFit.cover,
+          colorFilter: ColorFilter.mode(Colors.black12, BlendMode.darken),
+        ),
       ),
     );
   }

@@ -5,11 +5,13 @@ class WeatherModel extends ChangeNotifier {
   final WeatherApiService _apiService = WeatherApiService();
 
   Map<String, dynamic>? _weatherData;
+  Map<String, dynamic>? _forecastData;
   bool _isLoading = true;
   String? _error;
 
   // Getter'lar - dışarıdan veri almak için
   Map<String, dynamic>? get weatherData => _weatherData;
+  Map<String, dynamic>? get forecastData => _forecastData;
   bool get isLoading => _isLoading;
   String? get error => _error;
 
@@ -26,6 +28,7 @@ class WeatherModel extends ChangeNotifier {
 
     try {
       _weatherData = await _apiService.getWeather(city);
+      _forecastData = await _apiService.getForecast(city);
     } catch (e) {
       _error = e.toString();
     } finally {
