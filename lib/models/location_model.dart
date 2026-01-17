@@ -31,23 +31,36 @@ class LocationModel extends ChangeNotifier {
       if (position != null) {
         _latitude = position.latitude;
         _longitude = position.longitude;
+        debugPrint('Position obtained: $_latitude, $_longitude');
 
         // Enlem-boylam'dan şehir adını bul
-        String? city = await _locationService.getAddressFromCoordinates(
-          _latitude!,
-          _longitude!,
-        );
+        try {
+          String? city = await _locationService.getAddressFromCoordinates(
+            _latitude!,
+            _longitude!,
+          );
 
-        if (city != null && city.isNotEmpty && city != 'Bilinmiyor') {
-          _cityName = city;
-        } else {
-          _error = 'Şehir adı bulunamadı, varsayılan şehir kullanılıyor';
-          _cityName = 'Istanbul'; // Fallback
+          if (city != null && city.isNotEmpty) {
+            _cityName = city;
+            _error = null;
+            debugPrint('City found: $_cityName');
+          } else {
+            _error = 'Şehir adı alınamadı';
+            _cityName = null;
+          }
+        } catch (addressError) {
+          _error = 'Geocoding hatası: $addressError';
+          _cityName = null;
+          debugPrint('Address error: $addressError');
         }
+      } else {
+        _error = 'Konum bilgisi alınamadı';
+        _cityName = null;
       }
     } catch (e) {
-      _error = e.toString();
-      _cityName = 'Istanbul'; // Hata durumunda fallback
+      _error = 'Konum hatası: $e';
+      _cityName = null;
+      debugPrint('Location error: $e');
     } finally {
       _isLoading = false;
       notifyListeners();

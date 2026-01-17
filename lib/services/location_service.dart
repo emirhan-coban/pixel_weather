@@ -40,55 +40,38 @@ class LocationService {
     double longitude,
   ) async {
     try {
+      print('Getting address for: $latitude, $longitude');
+
       List<Placemark> placemarks = await placemarkFromCoordinates(
         latitude,
         longitude,
       );
 
+      print('Placemarks found: ${placemarks.length}');
+
       if (placemarks.isNotEmpty) {
         Placemark place = placemarks[0];
-        // Şehir adını veya bölge adını döndür
-        String? city =
-            place.locality ??
-            place.administrativeArea ??
-            place.country ??
-            'Bilinmiyor';
-        return city;
-      }
-      // Eğer placemarks boşsa, başka bir fallback yöntemi try
-      return _getAddressFromOpenWeather(latitude, longitude);
-    } catch (e) {
-      // Hata durumunda fallback
-      try {
-        return await _getAddressFromOpenWeather(latitude, longitude);
-      } catch (_) {
-        throw Exception('Adres alınamadı');
-      }
-    }
-  }
+        print(
+          'Place info - locality: ${place.locality}, adminArea: ${place.administrativeArea}, country: ${place.country}',
+        );
 
-  // Fallback: OpenWeatherMap Reverse Geocoding API
-  Future<String> _getAddressFromOpenWeather(
-    double latitude,
-    double longitude,
-  ) async {
-    try {
-      final String apiKey = 'senin_api_key_buraya'; // API key ekle
-      final response = await http.get(
-        Uri.parse(
-          'https://api.openweathermap.org/geo/1.0/reverse?lat=$latitude&lon=$longitude&limit=1&appid=$apiKey',
-        ),
-      );
+        // Boş olmayan ilk değeri döndür
+        String? city = (place.locality?.isNotEmpty == true)
+            ? place.locality
+            : (place.administrativeArea?.isNotEmpty == true)
+            ? place.administrativeArea
+            : place.country;
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body) as List;
-        if (data.isNotEmpty) {
-          return data[0]['name'] ?? 'Bilinmiyor';
+        if (city != null && city.isNotEmpty) {
+          print('Returning city: $city');
+          return city;
         }
       }
-      return 'Bilinmiyor';
+
+      throw Exception('Şehir adı bulunamadı');
     } catch (e) {
-      return 'Bilinmiyor';
+      print('Geocoding error: $e');
+      throw Exception('Adres alınamadı: $e');
     }
   }
 }

@@ -7,7 +7,6 @@ import 'package:pixel_weather/widgets/rain_animation.dart';
 import 'package:pixel_weather/widgets/snow_animation.dart';
 import 'package:pixel_weather/widgets/weather_details_grid.dart';
 import 'package:pixel_weather/widgets/forecast_item.dart';
-import 'package:intl/intl.dart';
 import 'package:pixel_weather/widgets/clothing_suggestion.dart';
 import 'package:pixel_weather/widgets/is_loading.dart';
 
@@ -56,16 +55,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final locationModel = Provider.of<LocationModel>(context, listen: false);
     await locationModel.fetchCurrentLocation();
 
-    if (locationModel.cityName != null) {
+    if (locationModel.cityName != null && locationModel.cityName!.isNotEmpty) {
       Provider.of<WeatherModel>(
         context,
         listen: false,
       ).fetchWeather(locationModel.cityName!);
     } else {
-      Provider.of<WeatherModel>(
-        context,
-        listen: false,
-      ).fetchWeather('Istanbul');
+      // Konum alınamazsa fallback şehir
+      debugPrint('Location not available: ${locationModel.error}');
+      Provider.of<WeatherModel>(context, listen: false).fetchWeather('Ankara');
     }
   }
 
