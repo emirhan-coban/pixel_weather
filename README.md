@@ -22,7 +22,7 @@ Nostaljik 8-bit estetiğini modern hava durumu tahminiyle birleştiren, pixel-ar
   <img src="screenshots/istanbul_cloudy.png" width="200" alt="İstanbul - Bulutlu"/>
   <img src="screenshots/three_lakes_sunny.png" width="200" alt="Three Lakes - Güneşli"/>
   <img src="screenshots/levis_snow.png" width="200" alt="Lévis - Karlı"/>
-  <img src="screenshots/barcelona_rain.png" width="200" alt="Barcelona - Yağmurlu"/>
+  <img src="screenshots/boston_rain.png" width="200" alt="Barcelona - Yağmurlu"/>
 </p>
 
 ## 🚀 Başlangıç
